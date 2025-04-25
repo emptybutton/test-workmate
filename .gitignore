@@ -174,3 +174,4 @@ cython_debug/
 .python-version
 .ruff_cache
 .uv_cache
+!logs/*

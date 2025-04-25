@@ -1,7 +1,7 @@
 [project]
-name = "app-name-kebab-case"
+name = "log-reporting"
 version = "0.1.0"
-description = "app_name_description"
+description = "приложение анализа и формирование отчётов логов"
 authors = [
     {name = "Alexander Smolin", email = "88573504+emptybutton@users.noreply.github.com"}
 ]
@@ -9,17 +9,7 @@ license = "Apache-2.0"
 readme = "README.md"
 classifiers = ["Private :: Do Not Upload"]
 requires-python = "==3.13.*"
-dependencies = [
-    "effectt==0.2.0",
-    "uvicorn[standard]==0.30.6",
-    "typenv==0.2.0",
-    "dishka==1.4.2",
-    "fastapi==0.115.2",
-    "PyJWT==2.10.1",
-    "sqlalchemy==2.0.38",
-    "psycopg[binary]==3.2.5",
-    "alembic==1.14.1",
-]
+dependencies = []
 
 [project.optional-dependencies]
 dev = [
@@ -29,8 +19,6 @@ dev = [
     "pytest-asyncio==0.25.3",
     "pytest-cov==6.0.0",
     "dirty-equals==0.8.0",
-    "httpx==0.27.2",
-    "httpx-ws==0.7.0",
 ]
 prod = []
 
@@ -39,10 +27,10 @@ requires = ["hatchling"]
 build-backend = "hatchling.build"
 
 [tool.hatch.build.targets.wheel]
-packages = ["src/app_name_snake_case"]
+packages = ["src/log_reporting"]
 
 [project.scripts]
-app-name-kebab-case-fastapi-dev = "app_name_snake_case.main.fastapi.__main__:main"
+report-logs = "log_reporting.main.cli.__main__:main"
 
 [tool.mypy]
 mypy_path = "$MYPY_CONFIG_FILE_DIR/src:$MYPY_CONFIG_FILE_DIR/tests"
@@ -68,11 +56,10 @@ ignore = ["N818", "RUF009", "UP018", "PLR6301", "PLR0913", "PLW0108", "TC006"]
 lines-after-imports = 2
 
 [tool.ruff.lint.per-file-ignores]
-"src/app_name_snake_case/entities/*" = ["PLR2004"]
-"src/app_name_snake_case/application/*" = ["PLR0917"]
-"src/app_name_snake_case/infrastructure/adapters/*" = ["RUF029"]
+"src/log_reporting/entities/*" = ["PLR2004"]
+"src/log_reporting/application/*" = ["PLR0917"]
+"src/log_reporting/infrastructure/adapters/*" = ["RUF029"]
 "tests/*" = ["S101", "PLR0124", "PLR0917", "S106", "C901"]
-"*/alembic/versions/*" = ["S101"]
 "__init__.py" = ["PLC0414"]
 
 [tool.pytest.ini_options]

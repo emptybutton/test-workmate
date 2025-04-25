@@ -1,46 +1,17 @@
-name: app-name-kebab-case
+name: log-reporting
 
 services:
-  backend:
+  log-reporting:
     build:
       context: ../../
-      dockerfile: deployments/dev/backend/Dockerfile
+      dockerfile: deployments/dev/log-reporting/Dockerfile
       tags:
-        - "app-name-kebab-case-backend:dev"
-    container_name: app-name-kebab-case-backend
+        - "log-reporting:dev"
+    container_name: log-reporting
     volumes:
       - ../..:/app
-      - backend-data:/run/app
-    ports:
-      - 8000:8000
-    depends_on:
-      postgres:
-        condition: service_healthy
-    environment:
-      JWT_SECRET: super-secret-jwt-secret
-      POSTGRES_URL: postgresql+psycopg://root:root@postgres/root
-    command: app-name-kebab-case-fastapi-dev
-
-  postgres:
-    image: postgres:16.3-alpine3.19
-    container_name: app-name-kebab-case-postgres
-    labels:
-      deployment: dev
-    volumes:
-      - postgres-data:/var/lib/postgresql/data
-    environment:
-      POSTGRES_DB: root
-      POSTGRES_USER: root
-      POSTGRES_PASSWORD: root
-    healthcheck:
-      test: pg_isready -d root -U root
-      start_period: 1m
-      start_interval: 1s
-      interval: 5s
+      - log-reporting-data:/run/app
+    command: bash
 
 volumes:
-  backend-data: null
-
-  postgres-data:
-    labels:
-      db: true
+  log-reporting-data: null
