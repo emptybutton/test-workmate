@@ -1,0 +1,85 @@
+[project]
+name = "app-name-kebab-case"
+version = "0.1.0"
+description = "app_name_description"
+authors = [
+    {name = "Alexander Smolin", email = "88573504+emptybutton@users.noreply.github.com"}
+]
+license = "Apache-2.0"
+readme = "README.md"
+classifiers = ["Private :: Do Not Upload"]
+requires-python = "==3.13.*"
+dependencies = [
+    "effectt==0.2.0",
+    "uvicorn[standard]==0.30.6",
+    "typenv==0.2.0",
+    "dishka==1.4.2",
+    "fastapi==0.115.2",
+    "PyJWT==2.10.1",
+    "sqlalchemy==2.0.38",
+    "psycopg[binary]==3.2.5",
+    "alembic==1.14.1",
+]
+
+[project.optional-dependencies]
+dev = [
+    "mypy[faster-cache]==1.15.0",
+    "ruff==0.9.7",
+    "pytest==8.3.4",
+    "pytest-asyncio==0.25.3",
+    "pytest-cov==6.0.0",
+    "dirty-equals==0.8.0",
+    "httpx==0.27.2",
+    "httpx-ws==0.7.0",
+]
+prod = []
+
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[tool.hatch.build.targets.wheel]
+packages = ["src/app_name_snake_case"]
+
+[project.scripts]
+app-name-kebab-case-fastapi-dev = "app_name_snake_case.main.fastapi.__main__:main"
+
+[tool.mypy]
+mypy_path = "$MYPY_CONFIG_FILE_DIR/src:$MYPY_CONFIG_FILE_DIR/tests"
+strict = true
+no_namespace_packages = true
+allow_redefinition = true
+
+[tool.ruff]
+src = ["src"]
+preview = true
+line-length = 80
+indent-width = 4
+
+[tool.ruff.lint]
+select = [
+    "ANN", "F", "W", "E", "B", "C90", "N", "UP", "YTT", "ASYNC", "PL", "RUF",
+    "Q", "RET", "SLF", "SLOT", "SIM", "TID252", "TCH", "ARG", "PTH", "ERA", "TRY",
+    "PERF", "INP", "I", "S", "FAST", "TID", "TCH", "INT"
+]
+ignore = ["N818", "RUF009", "UP018", "PLR6301", "PLR0913", "PLW0108", "TC006"]
+
+[tool.ruff.lint.isort]
+lines-after-imports = 2
+
+[tool.ruff.lint.per-file-ignores]
+"src/app_name_snake_case/entities/*" = ["PLR2004"]
+"src/app_name_snake_case/application/*" = ["PLR0917"]
+"src/app_name_snake_case/infrastructure/adapters/*" = ["RUF029"]
+"tests/*" = ["S101", "PLR0124", "PLR0917", "S106", "C901"]
+"*/alembic/versions/*" = ["S101"]
+"__init__.py" = ["PLC0414"]
+
+[tool.pytest.ini_options]
+pythonpath = ["src"]
+asyncio_mode = "auto"
+asyncio_default_fixture_loop_scope = "session"
+
+[tool.coverage.run]
+branch = true
+source = ["src/"]
