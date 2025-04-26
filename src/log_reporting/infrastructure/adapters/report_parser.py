@@ -17,3 +17,11 @@ class MultiprocessingReportParser[ReportT: Report, LogPlaceT](
         self, log_places: Sequence[LogPlaceT], /
     ) -> Iterable[ReportT]:
         return self.pool.map(self.parsed_report_from_log_place, log_places)
+
+
+@dataclass(frozen=True)
+class ReportParserFromReports[ReportT: Report](
+    ReportParser[ReportT, ReportT]
+):
+    def parse_from(self, reports: Sequence[ReportT], /) -> Sequence[ReportT]:
+        return reports

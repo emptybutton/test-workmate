@@ -2,7 +2,7 @@ from dataclasses import dataclass
 
 from log_reporting.application.ports.report_views import ReportViews
 from log_reporting.entities.log_level import LogLevel
-from log_reporting.entities.report import HandlerReport
+from log_reporting.entities.report import HandlerReport, Report
 from log_reporting.presentation.cli.report_view import (
     HandlerReportTable,
     handler_report_table,
@@ -30,3 +30,9 @@ class HandlerReportTablesAsReportViews(
         )
 
         return handler_report_table(report.total_requests, rows)
+
+
+@dataclass(frozen=True)
+class ReportsAsReportViews[ReportT: Report](ReportViews[ReportT, ReportT]):
+    def report_view(self, report: ReportT, /) -> ReportT:
+        return report
