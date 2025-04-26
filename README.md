@@ -1,4 +1,6 @@
 # log-reporting
+[![codecov](https://codecov.io/gh/emptybutton/test-workmate/graph/badge.svg?token=YNVP1PHVGS)](https://codecov.io/gh/emptybutton/test-workmate)
+
 Приложение анализа и формирования отчётов логов.
 
 ## Развертывание для разработки
