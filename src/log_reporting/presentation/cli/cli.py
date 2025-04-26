@@ -5,7 +5,14 @@ from pathlib import Path
 
 from log_reporting.application.generate_report import GenerateReport
 from log_reporting.entities.report import HandlerReport, Report
+from log_reporting.presentation.cli.report_view import HandlerReportTable
 from log_reporting.presentation.common.di import IoCContainer
+
+
+@dataclass(frozen=True)
+class ReportSpec:
+    report_type: type[Report]
+    report_view_type: type[str]
 
 
 @dataclass
@@ -13,11 +20,11 @@ class Cli:
     container: IoCContainer
     output_file: TextIOBase
     entrypoint_commands: tuple[str, ...]
-    _report_type_by_report_name: dict[str, type[Report]] = field(init=False)
+    _report_spec_by_report_name: dict[str, ReportSpec] = field(init=False)
 
     def __post_init__(self) -> None:
-        self._report_type_by_report_name = {
-            "handlers": HandlerReport
+        self._report_spec_by_report_name = {
+            "handlers": ReportSpec(HandlerReport, HandlerReportTable),
         }
 
     def __call__(self) -> None:
@@ -48,14 +55,14 @@ class Cli:
             ))
             sys.exit(1)
 
-        report_type = self._report_type_by_report_name.get(report_name)
+        report_spec = self._report_spec_by_report_name.get(report_name)
 
-        if report_type is None:
+        if report_spec is None:
             self._print(
                 self._error_message(f"invalid {report_name_option} values")
                 + "\n"
                 + self._tip_message(f"valid {report_name_option} values: ")
-                + " ".join(self._report_type_by_report_name)
+                + " ".join(self._report_spec_by_report_name)
             )
             sys.exit(1)
 
@@ -73,7 +80,11 @@ class Cli:
                 sys.exit(1)
 
         generate_report = self.container.get(
-            GenerateReport[report_type, Path, str]  # type: ignore[valid-type]
+            GenerateReport[
+                report_spec.report_type,  # type: ignore[name-defined]
+                Path,
+                report_spec.report_view_type  # type: ignore[name-defined]
+            ]
         )
 
         report_veiw = generate_report(paths)
