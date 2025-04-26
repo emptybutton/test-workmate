@@ -70,7 +70,7 @@ class Cli:
             Path(arg)
             for index, arg in enumerate(sys.argv)
             if index not in {
-                report_name_option_index, report_name_option_index + 1
+                0, report_name_option_index, report_name_option_index + 1
             }
         )
 
