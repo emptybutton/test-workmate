@@ -18,11 +18,8 @@ class Report(ABC):
 @dataclass
 class HandlerReport(Report):
     endpoint_map: dict[Endpoint, LogLevelCounter]
-    total_requests: int
 
     def expand_with(self, other: Self) -> None:
-        self.total_requests += other.total_requests
-
         for endpoint, other_log_level_counter in other.endpoint_map.items():
             self_log_level_counter = self.endpoint_map.get(endpoint)
 
@@ -32,6 +29,13 @@ class HandlerReport(Report):
 
             self_log_level_counter.expand_with(other_log_level_counter)
 
+    @property
+    def total_requests(self) -> int:
+        return sum(
+            sum(log_level_counter.map.values())
+            for log_level_counter in self.endpoint_map.values()
+        )
+
     @classmethod
     def empty_report(cls) -> "HandlerReport":
-        return HandlerReport(endpoint_map=dict(), total_requests=0)
+        return HandlerReport(endpoint_map=dict())

@@ -10,7 +10,6 @@ from log_reporting.infrastructure.log_level_parsing import (
 
 def parsed_handler_report_from_log_file(log_path: Path) -> HandlerReport:
     endpoint_map = dict[Endpoint, LogLevelCounter]()
-    total_requests = 0
 
     with log_path.open() as file:
         number_of_first_accessed_words = 6
@@ -41,6 +40,5 @@ def parsed_handler_report_from_log_file(log_path: Path) -> HandlerReport:
                 endpoint_map[endpoint] = log_level_counter
 
             log_level_counter.map[log_level] += 1
-            total_requests += 1
 
-    return HandlerReport(endpoint_map, total_requests)
+    return HandlerReport(endpoint_map)
