@@ -27,6 +27,11 @@ def handler_report_table(
     total_requests: int,
     rows: Sequence[tuple[str, int, int, int, int, int]]
 ) -> HandlerReportTable:
+    total_request_view = f"Total requests: {total_requests}"
+
+    if not rows:
+        return HandlerReportTable(total_request_view)
+
     return HandlerReportTable(
         f"Total requests: {total_requests}"
         + f"\n\n{table(handler_report_table_layout, rows)}"
