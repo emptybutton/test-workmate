@@ -66,30 +66,32 @@ class MultiprocessingReportParserFromLogFiles[ReportT: Report](
     def _file_slices(
         self, delimeter_offsets: list[int]
     ) -> list["slice[int, int | None, None]"]:
-        min_slice_count = len(delimeter_offsets) // self.divider_for_processes
+        batch_size = len(delimeter_offsets) // self.divider_for_processes
 
-        if min_slice_count <= 1:
+        if batch_size == len(delimeter_offsets):
             return [cast("slice[int, int, None]", slice(0, None))]
 
-        slice_delimeter_offset_batches = batched(
-            delimeter_offsets, min_slice_count, strict=False
-        )
-
-        file_slices: list["slice[int, int | None, None]"] = [  # noqa: UP037
-            cast(
-                "slice[int, int, None]",
-                slice(
-                    slice_delimeter_offsets[0] + 1, slice_delimeter_offsets[-1]
-                ),
-            )
-            for slice_delimeter_offsets in slice_delimeter_offset_batches
-        ]
-        file_slices.extend((
-            cast("slice[int, int, None]", slice(0, delimeter_offsets[0])),
-            cast(
-                "slice[int, int, None]", slice(delimeter_offsets[-1] + 1, None)
-            ),
+        slice_delimeter_offset_batches = tuple(batched(
+            delimeter_offsets, batch_size, strict=False
         ))
+
+        file_slices = list["slice[int, int | None, None]"]()
+        prevous_delimeter_offset_bacth: tuple[int, ...] = (-1, )
+
+        for index, delimeter_offset_bacth in enumerate(
+            slice_delimeter_offset_batches
+        ):
+            is_batch_last = index == len(slice_delimeter_offset_batches) - 1
+
+            start = prevous_delimeter_offset_bacth[-1] + 1
+            stop = None if is_batch_last else delimeter_offset_bacth[-1]
+
+            slice_ = cast(
+                "slice[int, int | None, None]",
+                slice(start, stop),
+            )
+            file_slices.append(slice_)
+            prevous_delimeter_offset_bacth = delimeter_offset_bacth
 
         return file_slices
 

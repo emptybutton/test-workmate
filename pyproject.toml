@@ -59,7 +59,7 @@ lines-after-imports = 2
 "src/log_reporting/entities/*" = ["PLR2004"]
 "src/log_reporting/application/*" = ["PLR0917"]
 "src/log_reporting/infrastructure/adapters/*" = ["RUF029"]
-"tests/*" = ["S101", "PLR0124", "PLR0917", "S106", "C901"]
+"tests/*" = ["S101", "PLR0124", "PLR0917", "S106", "C901", "PLR2004"]
 "__init__.py" = ["PLC0414"]
 
 [tool.pytest.ini_options]

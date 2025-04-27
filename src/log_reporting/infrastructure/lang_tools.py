@@ -26,4 +26,8 @@ def slices(range_: range) -> list["slice[int, int, None]"]:
         )
         prevous_offset = offset
 
+    slices_.append(
+        cast("slice[int, int, None]", slice(prevous_offset, range_.stop))
+    )
+
     return slices_

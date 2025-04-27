@@ -64,9 +64,9 @@ def parsed_file_segment[T](
         for line in file:
             offset_of_parsed_lines += len(line.encode())
 
+            result = generator_of_parsed_segment_line.send(line)
+
             if slice.stop is not None and offset_of_parsed_lines >= slice.stop:
                 break
-
-            result = generator_of_parsed_segment_line.send(line)
 
         return result
