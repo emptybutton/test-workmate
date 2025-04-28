@@ -1,0 +1,49 @@
+name: CD
+
+on:
+  release:
+    types: [published]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      - uses: actions/setup-python@v4
+        with:
+          python-version: "3.13"
+      - uses: yezz123/setup-uv@v4
+
+      - name: build
+        run: uv build
+
+      - name: upload build
+        uses: actions/upload-artifact@v4
+        with:
+          name: build
+          path: dist/
+
+  pypi-publish:
+    runs-on: ubuntu-latest
+    environment:
+      name: pypi
+      url: https://pypi.org/p/effectt
+    needs:
+      - build
+    steps:
+      - uses: actions/checkout@v3
+      - uses: actions/setup-python@v4
+        with:
+          python-version: "3.13"
+      - uses: yezz123/setup-uv@v4
+
+      - name: retrieve build
+        uses: actions/download-artifact@v4
+        with:
+          name: build
+          path: dist/
+
+      - name: publish
+        run: uv publish
+        env:
+          UV_PUBLISH_TOKEN: ${{ secrets.PYPI_TOKEN }}
