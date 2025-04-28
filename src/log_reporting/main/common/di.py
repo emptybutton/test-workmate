@@ -12,8 +12,12 @@ from log_reporting.infrastructure.parsed_report import (
 )
 from log_reporting.presentation.adapters.report_views import (
     HandlerReportTablesAsReportViews,
+    HandlerReportTablesWithoutTotalRequestsAsReportViews,
 )
-from log_reporting.presentation.cli.report_view import HandlerReportTable
+from log_reporting.presentation.cli.report_view import (
+    HandlerReportTable,
+    HandlerReportTableWithoutTotalRequests,
+)
 from log_reporting.presentation.common.di import IoCContainer
 
 
@@ -21,6 +25,9 @@ _process_pool = Pool()
 _cpu_count = os.process_cpu_count() or 1
 
 _handler_report_tables_as_report_views = HandlerReportTablesAsReportViews()
+_handler_report_tables_without_total_requests_as_report_views = (
+    HandlerReportTablesWithoutTotalRequestsAsReportViews()
+)
 
 _multiprocess_handler_report_parser_from_log_files = (
     MultiprocessReportParserFromLogFiles(
@@ -42,5 +49,17 @@ container.provide(
         report_type=HandlerReport,
     ),
     provides=GenerateReport[HandlerReport, Path, HandlerReportTable],
+)
+container.provide(
+    GenerateReport(
+        report_parser=_multiprocess_handler_report_parser_from_log_files,
+        report_views=(
+            _handler_report_tables_without_total_requests_as_report_views
+        ),
+        report_type=HandlerReport,
+    ),
+    provides=GenerateReport[
+        HandlerReport, Path, HandlerReportTableWithoutTotalRequests
+    ],
 )
 container.on_close(_process_pool.close)
