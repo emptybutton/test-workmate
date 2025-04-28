@@ -1,15 +1,17 @@
 [project]
 name = "log-reporting"
 version = "0.1.0"
-description = "приложение анализа и формирование отчётов логов"
+description = "Приложение анализа и формирование отчётов логов"
 authors = [
     {name = "Alexander Smolin", email = "88573504+emptybutton@users.noreply.github.com"}
 ]
-license = "Apache-2.0"
+license = { file = "LICENSE" }
 readme = "README.md"
-classifiers = ["Private :: Do Not Upload"]
 requires-python = "==3.13.*"
 dependencies = []
+
+[project.urls]
+Repository = "https://github.com/emptybutton/test-workmate"
 
 [project.optional-dependencies]
 dev = [
@@ -18,7 +20,6 @@ dev = [
     "pytest==8.3.4",
     "pytest-asyncio==0.25.3",
     "pytest-cov==6.0.0",
-    "dirty-equals==0.8.0",
 ]
 prod = []
 
