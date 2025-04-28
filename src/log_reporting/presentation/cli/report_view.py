@@ -32,7 +32,8 @@ def handler_report_table(
     if not rows:
         return HandlerReportTable(total_request_view)
 
+    rows = sorted(rows, key=lambda row: row[0])
+
     return HandlerReportTable(
-        f"Total requests: {total_requests}"
-        + f"\n\n{table(handler_report_table_layout, rows)}"
+        f"{table(handler_report_table_layout, rows)}\n\n{total_request_view}"
     )
