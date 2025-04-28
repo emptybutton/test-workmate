@@ -2,6 +2,7 @@ from functools import partial
 from multiprocessing.pool import Pool
 from pathlib import Path
 
+from _pytest.fixtures import SubRequest
 from pytest import fixture
 
 from log_reporting.entities.report import HandlerReport
@@ -18,7 +19,7 @@ type Parser = MultiprocessingReportParserFromLogFiles[HandlerReport]
 
 
 @fixture(scope="module")
-def parser(process_pool: Pool) -> Parser:
+def low_chunk_parser(process_pool: Pool) -> Parser:
     return MultiprocessingReportParserFromLogFiles(
         pool=process_pool,
         relative_chunk_byte_count=8,
@@ -32,7 +33,63 @@ def parser(process_pool: Pool) -> Parser:
     )
 
 
-def test_with_only_zero_log(parser: Parser, zero_log_path: Path) -> None:
-    reports = list(parser.parse_from([zero_log_path]))
+@fixture(scope="module")
+def height_chunk_parser(process_pool: Pool) -> Parser:
+    return MultiprocessingReportParserFromLogFiles(
+        pool=process_pool,
+        relative_chunk_byte_count=1_000_000,
+        divider_for_processes=40,
+        parsed_report_from_log_file_segment=partial(
+            parsed_file_segment,
+            generator_of_parsed_segment_line_=(
+                generator_of_parsed_handler_report_from_lines
+            ),
+        )
+    )
 
-    assert reports == [HandlerReport(dict())]
+
+@fixture(scope="module", params=["low", "height"])
+def any_parser(
+    request: SubRequest,
+    low_chunk_parser: Parser,
+    height_chunk_parser: Parser
+) -> Parser:
+    match request.param:
+        case "low":
+            return low_chunk_parser
+        case "height":
+            return height_chunk_parser
+        case _:
+            raise ValueError
+
+
+def test_any_parser_with_handler_reports(
+    any_parser: Parser,
+    log_path_and_log_handler_report: tuple[Path, HandlerReport],
+) -> None:
+    log_path, reult_report = log_path_and_log_handler_report
+
+    reports = list(any_parser.parse_from([log_path]))
+
+    result_report = HandlerReport.empty_report()
+
+    for report in reports:
+        result_report.expand_with(report)
+
+    assert result_report == reult_report
+
+
+def test_any_parser_with_log_handler_report_total_requests(
+    any_parser: Parser,
+    log_path_and_log_handler_report_total_requests: tuple[Path, int],
+) -> None:
+    log_path, total_requests = log_path_and_log_handler_report_total_requests
+
+    reports = list(any_parser.parse_from([log_path]))
+
+    result_report = HandlerReport.empty_report()
+
+    for report in reports:
+        result_report.expand_with(report)
+
+    assert result_report.total_requests == total_requests

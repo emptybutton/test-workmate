@@ -27,12 +27,15 @@ def parsed_file_line_delimeter_offsets(
         offset = file_segment.start
         file.seek(offset)
 
-        reading_file_chunk = file.read(min((
-            reading_file_chunk_size,
-            file_segment.stop - offset - 1,
-        )))
+        while offset < file_segment.stop:
+            reading_file_chunk = file.read(min((
+                reading_file_chunk_size,
+                file_segment.stop - offset - 1,
+            )))
 
-        while reading_file_chunk and offset < file_segment.stop:
+            if not reading_file_chunk:
+                break
+
             try:
                 index = reading_file_chunk.rindex(b"\n")
             except ValueError:
@@ -40,10 +43,6 @@ def parsed_file_line_delimeter_offsets(
             else:
                 parsed_file_line_delimeter_offsets_.append(index + offset)
 
-            reading_file_chunk = file.read(min((
-                reading_file_chunk_size,
-                file_segment.stop - offset - 1,
-            )))
             offset += len(reading_file_chunk)
 
         return parsed_file_line_delimeter_offsets_

@@ -2,6 +2,7 @@ from collections.abc import Iterator
 from multiprocessing.pool import Pool
 from pathlib import Path
 
+from _pytest.fixtures import SubRequest
 from pytest import Item, fixture, mark
 from pytest_asyncio import is_async_test
 
@@ -11,53 +12,55 @@ from log_reporting.entities.report import HandlerReport
 
 
 @fixture(scope="session")
-def app1_log_path() -> Path:
-    return Path("./logs/app1.log")
+def zero_log_handler_report_total_requests() -> int:
+    return 0
 
 
 @fixture(scope="session")
-def app1_log_handler_report() -> HandlerReport:
-    report = HandlerReport({
-        "/api/v1/reviews/": LogLevelCounter({
-            LogLevel.info: 7, LogLevel.error: 3
-        }),
-        "/api/v1/products/": LogLevelCounter({
-            LogLevel.info: 4, LogLevel.error: 2
-        }),
-        "/admin/dashboard/": LogLevelCounter({
-            LogLevel.info: 3, LogLevel.error: 1
-        }),
-        "/api/v1/auth/login/": LogLevelCounter({
-            LogLevel.info: 5, LogLevel.error: 1
-        }),
-        "/admin/login/": LogLevelCounter({
-            LogLevel.info: 4, LogLevel.error: 2
-        }),
-        "/api/v1/users/": LogLevelCounter({
-            LogLevel.info: 2, LogLevel.error: 1
-        }),
-        "/api/v1/orders/": LogLevelCounter({
-            LogLevel.info: 4, LogLevel.error: 1
-        }),
-        "/api/v1/support/": LogLevelCounter({
-            LogLevel.info: 7, LogLevel.error: 1
-        }),
-        "/api/v1/cart/": LogLevelCounter({
-            LogLevel.info: 5, LogLevel.error: 1
-        }),
-        "/api/v1/shipping/": LogLevelCounter({
-            LogLevel.info: 3, LogLevel.error: 1
-        }),
-        "/api/v1/payments/": LogLevelCounter({
-            LogLevel.info: 2
-        }),
-        "/api/v1/checkout/": LogLevelCounter({
-            LogLevel.info: 4, LogLevel.error: 2
-        }),
+def app0_log_handler_report_total_requests() -> int:
+    return 12
+
+
+@fixture(scope="session")
+def app1_log_handler_report_total_requests() -> int:
+    return 60
+
+
+@fixture(scope="session")
+def app2_log_handler_report_total_requests() -> int:
+    return 62
+
+
+@fixture(scope="session")
+def app3_log_handler_report_total_requests() -> int:
+    return 66
+
+
+@fixture(scope="session")
+def app0_log_handler_report() -> HandlerReport:
+    return HandlerReport({
+        "/a": LogLevelCounter({LogLevel.info: 2}),
+        "/b": LogLevelCounter({LogLevel.info: 2}),
+        "/c": LogLevelCounter({LogLevel.info: 2}),
+        "/d": LogLevelCounter({LogLevel.info: 2}),
+        "/e": LogLevelCounter({LogLevel.info: 2}),
+        "/f": LogLevelCounter({LogLevel.info: 2}),
     })
 
-    assert report.total_requests == 60
-    return report
+
+@fixture(scope="session")
+def zero_log_handler_report() -> HandlerReport:
+    return HandlerReport.empty_report()
+
+
+@fixture(scope="session")
+def app0_log_path() -> Path:
+    return Path("./logs/app0.log")
+
+
+@fixture(scope="session")
+def app1_log_path() -> Path:
+    return Path("./logs/app1.log")
 
 
 @fixture(scope="session")
@@ -77,17 +80,65 @@ def zero_log_path() -> Path:
 
 @fixture(scope="session")
 def log_paths(
+    app0_log_path: Path,
     app1_log_path: Path,
     app2_log_path: Path,
     app3_log_path: Path,
     zero_log_path: Path,
 ) -> tuple[Path, ...]:
     return (
+        app0_log_path,
         app1_log_path,
         app2_log_path,
         app3_log_path,
         zero_log_path,
     )
+
+
+@fixture(scope="module", params=["app0", "zero"])
+def log_path_and_log_handler_report(
+    request: SubRequest,
+    app0_log_path: Path,
+    zero_log_path: Path,
+    app0_log_handler_report: HandlerReport,
+    zero_log_handler_report: HandlerReport,
+) -> tuple[Path, HandlerReport]:
+    match request.param:
+        case "app0":
+            return app0_log_path, app0_log_handler_report
+        case "zero":
+            return zero_log_path, zero_log_handler_report
+        case _:
+            raise ValueError
+
+
+@fixture(scope="module", params=["zero", "app0", "app1", "app2", "app3"])
+def log_path_and_log_handler_report_total_requests(
+    request: SubRequest,
+    zero_log_path: Path,
+    app0_log_path: Path,
+    app1_log_path: Path,
+    app2_log_path: Path,
+    app3_log_path: Path,
+    zero_log_handler_report_total_requests: int,
+    app0_log_handler_report_total_requests: int,
+    app1_log_handler_report_total_requests: int,
+    app2_log_handler_report_total_requests: int,
+    app3_log_handler_report_total_requests: int,
+) -> tuple[Path, int]:
+    match request.param:
+        case "zero":
+            return zero_log_path, zero_log_handler_report_total_requests
+        case "app0":
+            return app0_log_path, app0_log_handler_report_total_requests
+        case "app1":
+            return app1_log_path, app1_log_handler_report_total_requests
+        case "app2":
+            return app2_log_path, app2_log_handler_report_total_requests
+        case "app3":
+            return app3_log_path, app3_log_handler_report_total_requests
+        case _:
+            raise ValueError
 
 
 @fixture(scope="session")

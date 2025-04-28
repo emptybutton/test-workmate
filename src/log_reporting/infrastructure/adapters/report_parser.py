@@ -37,6 +37,7 @@ class MultiprocessingReportParserFromLogFiles[ReportT: Report](
             for log_file_path in log_file_paths
             for slice_ in slices(self._file_segment_range(log_file_path))
         )
+
         delimeter_offset_batch_and_file_path = self.pool.map(
             _parsed_file_line_delimeter_offsets_and_file_paths, arg_packs
         )
@@ -68,8 +69,8 @@ class MultiprocessingReportParserFromLogFiles[ReportT: Report](
     ) -> list["slice[int, int | None, None]"]:
         batch_size = len(delimeter_offsets) // self.divider_for_processes
 
-        if batch_size == len(delimeter_offsets):
-            return [cast("slice[int, int, None]", slice(0, None))]
+        if batch_size == 0:
+            batch_size = 1
 
         slice_delimeter_offset_batches = tuple(batched(
             delimeter_offsets, batch_size, strict=False

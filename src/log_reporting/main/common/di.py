@@ -32,8 +32,8 @@ _handler_report_tables_as_report_views = HandlerReportTablesAsReportViews()
 _multiprocessing_handler_report_parser_from_log_files = (
     MultiprocessingReportParserFromLogFiles(
         pool=_process_pool,
-        relative_chunk_byte_count=800_000,
-        divider_for_processes=(os.process_cpu_count() or 1) * 10,
+        relative_chunk_byte_count=2_000_000,
+        divider_for_processes=(os.process_cpu_count() or 1) * 2,
         parsed_report_from_log_file_segment=(
             _parsed_handler_report_from_log_file_segment
         ),
