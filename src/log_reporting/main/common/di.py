@@ -1,14 +1,12 @@
 import os
-from functools import partial
 from multiprocessing import Pool
 from pathlib import Path
 
 from log_reporting.application.generate_report import GenerateReport
 from log_reporting.entities.report import HandlerReport
 from log_reporting.infrastructure.adapters.report_parser import (
-    MultiprocessingReportParserFromLogFiles,
+    MultiprocessReportParserFromLogFiles,
 )
-from log_reporting.infrastructure.file_parsing import parsed_file_segment
 from log_reporting.infrastructure.parsed_report import (
     generator_of_parsed_handler_report_from_lines,
 )
@@ -20,22 +18,18 @@ from log_reporting.presentation.common.di import IoCContainer
 
 
 _process_pool = Pool()
-
-_parsed_handler_report_from_log_file_segment = partial(
-    parsed_file_segment,
-    generator_of_parsed_segment_line_=(
-        generator_of_parsed_handler_report_from_lines
-    ),
-)
+_cpu_count = os.process_cpu_count() or 1
 
 _handler_report_tables_as_report_views = HandlerReportTablesAsReportViews()
-_multiprocessing_handler_report_parser_from_log_files = (
-    MultiprocessingReportParserFromLogFiles(
+
+_multiprocess_handler_report_parser_from_log_files = (
+    MultiprocessReportParserFromLogFiles(
         pool=_process_pool,
-        relative_chunk_byte_count=2_000_000,
-        divider_for_processes=(os.process_cpu_count() or 1) * 2,
-        parsed_report_from_log_file_segment=(
-            _parsed_handler_report_from_log_file_segment
+        line_separator_parsing_chunk_size=4_000_000,
+        divider_for_multiprocess_parsing_of_line_separators=_cpu_count,
+        divider_for_multiprocess_parsing_of_file_segments=_cpu_count * 4,
+        generator_of_parsed_report_from_lines_=(
+            generator_of_parsed_handler_report_from_lines
         ),
     )
 )
@@ -43,7 +37,7 @@ _multiprocessing_handler_report_parser_from_log_files = (
 container = IoCContainer()
 container.provide(
     GenerateReport(
-        report_parser=_multiprocessing_handler_report_parser_from_log_files,
+        report_parser=_multiprocess_handler_report_parser_from_log_files,
         report_views=_handler_report_tables_as_report_views,
         report_type=HandlerReport,
     ),

@@ -33,12 +33,12 @@ def handler_report_and_its_view(
                 app0_log_handler_report,
                 HandlerReportTable(
                     "Total requests: 12\n\n"
-                    "HANDLER                 DEBUG   INFO    WARNING ERROR   CRITICAL"
-                    "\n/a                      0       2       0       0       0       "
-                    "\n/b                      0       2       0       0       0       "
-                    "\n/c                      0       2       0       0       0       "
-                    "\n/d                      0       2       0       0       0       "
-                    "\n/e                      0       2       0       0       0       "
+                    "HANDLER                 DEBUG   INFO    WARNING ERROR   CRITICAL"  # noqa: E501
+                    "\n/a                      0       2       0       0       0       "  # noqa: E501
+                    "\n/b                      0       2       0       0       0       "  # noqa: E501
+                    "\n/c                      0       2       0       0       0       "  # noqa: E501
+                    "\n/d                      0       2       0       0       0       "  # noqa: E501
+                    "\n/e                      0       2       0       0       0       "  # noqa: E501
                     "\n/f                      0       2       0       0       0       "  # noqa: E501
                 ),
             )
