@@ -36,3 +36,10 @@ def handler_report_table(
         f"Total requests: {total_requests}"
         + f"\n\n{table(handler_report_table_layout, rows)}"
     )
+
+
+XyzReportLines = NewType("XyzReportLines", str)
+
+
+def xyz_report_lines(x: int, y: int, z: int) -> XyzReportLines:
+    return XyzReportLines(f"X = {x}\nY = {y}\nZ = {z}")
