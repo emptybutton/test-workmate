@@ -39,3 +39,19 @@ class HandlerReport(Report):
     @classmethod
     def empty_report(cls) -> "HandlerReport":
         return HandlerReport(endpoint_map=dict())
+
+
+@dataclass
+class XyzReport(Report):
+    x: int
+    y: int
+    z: int
+
+    def expand_with(self, other: Self) -> None:
+        self.x += other.x
+        self.y += other.y
+        self.z += other.z
+
+    @classmethod
+    def empty_report(cls) -> "XyzReport":
+        return XyzReport(0, 0, 0)

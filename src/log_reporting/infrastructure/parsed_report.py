@@ -1,7 +1,7 @@
 from collections.abc import Generator
 
 from log_reporting.entities.log_level_counter import LogLevelCounter
-from log_reporting.entities.report import HandlerReport
+from log_reporting.entities.report import HandlerReport, XyzReport
 from log_reporting.infrastructure.parsed_log_level import (
     parsed_log_level_from_literal,
 )
@@ -40,3 +40,18 @@ def generator_of_parsed_handler_report_from_lines() -> Generator[
             report.endpoint_map[endpoint] = log_level_counter
 
         log_level_counter.map[log_level] += 1
+
+
+def generator_of_parsed_xyz_report_from_lines() -> Generator[XyzReport, str]:
+    report = XyzReport.empty_report()
+
+    while True:
+        line = (yield report)
+
+        report.x += line.count("x")
+        report.y += line.count("y")
+        report.z += line.count("z")
+
+        report.x += line.count("X")
+        report.z += line.count("Y")
+        report.z += line.count("Z")
