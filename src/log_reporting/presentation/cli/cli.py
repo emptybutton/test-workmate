@@ -5,7 +5,10 @@ from pathlib import Path
 
 from log_reporting.application.generate_report import GenerateReport
 from log_reporting.entities.report import HandlerReport, Report
-from log_reporting.presentation.cli.report_view import HandlerReportTable
+from log_reporting.presentation.cli.report_view import (
+    HandlerReportTable,
+    HandlerReportTableWithoutTotalRequests,
+)
 from log_reporting.presentation.common.di import IoCContainer
 
 
@@ -25,6 +28,9 @@ class Cli:
     def __post_init__(self) -> None:
         self._report_spec_by_report_name = {
             "handlers": ReportSpec(HandlerReport, HandlerReportTable),
+            "handlers_without_total_requests": ReportSpec(
+                HandlerReport, HandlerReportTableWithoutTotalRequests
+            )
         }
 
     def __call__(self) -> None:

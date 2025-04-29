@@ -37,3 +37,19 @@ def handler_report_table(
     return HandlerReportTable(
         f"{table(handler_report_table_layout, rows)}\n\n{total_request_view}"
     )
+
+
+HandlerReportTableWithoutTotalRequests = NewType(
+    "HandlerReportTableWithoutTotalRequests", str
+)
+
+
+def handler_report_table_witout_total_requests(
+    rows: Sequence[tuple[str, int, int, int, int, int]]
+) -> HandlerReportTableWithoutTotalRequests:
+    if not rows:
+        return HandlerReportTableWithoutTotalRequests("")
+
+    return HandlerReportTableWithoutTotalRequests(
+        f"{table(handler_report_table_layout, rows)}"
+    )

@@ -5,7 +5,9 @@ from log_reporting.entities.log_level import LogLevel
 from log_reporting.entities.report import HandlerReport, Report
 from log_reporting.presentation.cli.report_view import (
     HandlerReportTable,
+    HandlerReportTableWithoutTotalRequests,
     handler_report_table,
+    handler_report_table_witout_total_requests,
 )
 
 
@@ -30,6 +32,28 @@ class HandlerReportTablesAsReportViews(
         )
 
         return handler_report_table(report.total_requests, rows)
+
+
+@dataclass(frozen=True)
+class HandlerReportTablesWithoutTotalRequestsAsReportViews(
+    ReportViews[HandlerReport, HandlerReportTableWithoutTotalRequests]
+):
+    def report_view(
+        self, report: HandlerReport, /
+    ) -> HandlerReportTableWithoutTotalRequests:
+        rows = tuple(
+            (
+                endpoint,
+                log_level_counter.map[LogLevel.debug],
+                log_level_counter.map[LogLevel.info],
+                log_level_counter.map[LogLevel.warning],
+                log_level_counter.map[LogLevel.error],
+                log_level_counter.map[LogLevel.critical],
+            )
+            for endpoint, log_level_counter in report.endpoint_map.items()
+        )
+
+        return handler_report_table_witout_total_requests(rows)
 
 
 @dataclass(frozen=True)
