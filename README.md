@@ -4,9 +4,9 @@
 Приложение анализа и формирования отчётов логов.
 
 ## Варианты установки
-test.pypi:
+pip:
 ```bash
-pip install -i https://test.pypi.org/simple/ log-reporting
+pip install log-reporting
 ```
 
 github и uv:
